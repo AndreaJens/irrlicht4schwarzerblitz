@@ -516,6 +516,20 @@ bool SJoystickWin32Control::activateJoysticks(core::array<SJoystickInfo> & joyst
 {
 #if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
 	joystickInfo.clear();
+	
+#ifdef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
+	for (u32 joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
+	{
+		LPDIRECTINPUTDEVICE8 dev = ActiveJoysticks[joystick].lpdijoy;
+		os::Printer::log(ActiveJoysticks[joystick].Name.c_str(), ELL_INFORMATION);
+		if (dev)
+		{
+			dev->Unacquire();
+		}
+		dev->Release();
+		os::Printer::log("Joystick resource correctly released", ELL_WARNING);
+	}
+#endif
 	ActiveJoysticks.clear();
 #ifdef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
 	if (!DirectInputDevice || (DirectInputDevice->EnumDevices(DI8DEVCLASS_GAMECTRL, SJoystickWin32Control::EnumJoysticks, this, DIEDFL_ATTACHEDONLY )))
